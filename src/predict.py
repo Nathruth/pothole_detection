@@ -5,7 +5,7 @@ from PIL import Image
 import json
 from torchvision import transforms
 
-MODEL_DIR = "../models"
+MODEL_DIR = "./models"
 MODEL_PATH = f"{MODEL_DIR}/mobilenetv2_pothole.onnx"
 DATA_PATH  = f"{MODEL_DIR}/mobilenetv2_pothole.onnx.data"
 
