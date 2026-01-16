@@ -3,3 +3,9 @@ numpy
 matplotlib
 scikit-learn
 xgboost
+flask
+onnxruntime
+torch
+torchvision
+pillow
+onnxscript

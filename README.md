@@ -99,9 +99,6 @@ Some misclassifications remain (13 normal images predicted as potholes, 10 potho
 
 ---
 
-Got it! Let’s make a **full README section for your CNN**, **including both baseline training and fine-tuning**, with a clear comparison of results and interpretation. Here’s a polished version you can include in your project:
-
----
 
 # **Pothole Detection using MobileNetV2**
 
