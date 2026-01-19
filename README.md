@@ -91,7 +91,7 @@ Some misclassifications remain (13 normal images predicted as potholes, 10 potho
 
 ---
 
-💡 Summary:
+💡 Results:
 
 * Majority baseline shows minimum expected performance
 * Logistic Regression demonstrates weak, interpretable learning
@@ -185,3 +185,75 @@ The CNN significantly outperforms classical baselines like XGBoost (F1 ~0.77) wh
 
 ---
 
+## Run Locally
+
+1. Clone the repository:
+
+```
+git clone https://github.com/Nathruth/pothole_detection.git
+cd pothole_detection
+```
+
+2. Create and activate a virtual environment:
+
+```
+python -m venv .venv
+source .venv/bin/activate  # Linux / macOS
+# OR
+.venv\Scripts\activate     # Windows
+```
+
+3. Install dependencies:
+
+```
+pip install -r requirements.txt
+```
+
+4. Train the model and generate artifacts:
+
+```
+python train.py
+```
+
+5. Start the web service:
+
+```
+python app/serve.py
+```
+
+---
+
+
+##  Run with Docker 
+
+1. Build the Docker image:
+
+```
+docker build -t pothole-detection .
+```
+
+2. Run the container:
+
+```
+docker run -p 5000:5000 pothole-detector
+```
+
+---
+
+
+##  Cloud Deployment (Render)
+
+I deployed the FastAPI inference service to **Render.com** free tier for a live demo.
+
+**Public URL:** 
+
+```
+https://pothole-detection-mkuh.onrender.com
+```
+
+---
+
+## Acknowledgments
+
+I would like to thank Alexey Grigorev and the ML Zoomcamp team for making this course freely available.
+Thank you for the effort and care put into creating and maintaining such a high-quality free resource.
