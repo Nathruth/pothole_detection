@@ -1,43 +1,52 @@
 # src/predict.py
-import onnxruntime as ort
-import numpy as np
-from PIL import Image
 import json
+import numpy as np
+import onnxruntime as ort
+from PIL import Image
 from torchvision import transforms
+from pathlib import Path
 
-MODEL_DIR = "./models"
-MODEL_PATH = f"{MODEL_DIR}/mobilenetv2_pothole.onnx"
-DATA_PATH  = f"{MODEL_DIR}/mobilenetv2_pothole.onnx.data"
+# -------- Paths (Docker-safe) --------
+BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Load metadata
-with open(DATA_PATH) as f:
+MODEL_PATH = BASE_DIR / "models" / "mobilenetv2_pothole.onnx"
+METADATA_PATH = BASE_DIR / "models" / "metadata.json"
+
+# -------- Load metadata --------
+with open(METADATA_PATH, "r", encoding="utf-8") as f:
     metadata = json.load(f)
 
 classes = metadata["classes"]
 mean = metadata["mean"]
-std  = metadata["std"]
+std = metadata["std"]
 input_size = metadata["input_size"]
 
-# Preprocessing
-def preprocess_image(image_path):
+# -------- Preprocessing --------
+transform = transforms.Compose([
+    transforms.Resize((input_size[1], input_size[2])),
+    transforms.ToTensor(),
+    transforms.Normalize(mean=mean, std=std),
+])
+
+def preprocess_image(image_path: str) -> np.ndarray:
     img = Image.open(image_path).convert("RGB")
-    transform = transforms.Compose([
-        transforms.Resize((input_size[1], input_size[2])),
-        transforms.ToTensor(),
-        transforms.Normalize(mean, std)
-    ])
-    return transform(img).unsqueeze(0).numpy().astype(np.float32)
+    x = transform(img).unsqueeze(0)
+    return x.numpy().astype(np.float32)
 
-# Load ONNX model
-ort_session = ort.InferenceSession(MODEL_PATH)
+# -------- Load ONNX model (CPU) --------
+ort_session = ort.InferenceSession(
+    str(MODEL_PATH),
+    providers=["CPUExecutionProvider"]
+)
 
-def predict(image_path):
+# -------- Prediction --------
+def predict(image_path: str) -> str:
     x = preprocess_image(image_path)
     outputs = ort_session.run(None, {"input": x})
-    pred = np.argmax(outputs[0], axis=1)[0]
-    return classes[pred]
+    pred_idx = int(np.argmax(outputs[0], axis=1)[0])
+    return classes[pred_idx]
 
-# Example usage
+# -------- Local test --------
 if __name__ == "__main__":
-    img_path = "../data/normal/13.jpg"
-    print("Prediction:", predict(img_path))
+    test_img = BASE_DIR / "data" / "normal" / "13.jpg"
+    print("Prediction:", predict(str(test_img)))
